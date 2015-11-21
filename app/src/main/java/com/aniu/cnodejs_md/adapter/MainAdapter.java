@@ -37,8 +37,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-//            case TYPE_LOAD_MORE:
-//                return new LoadMoreViewHolder(inflater.inflate(R.layout.fragment_item_load_more, parent, false));
+            case TYPE_LOAD_MORE:
+                return new LoadMoreViewHolder(inflater.inflate(R.layout.fragment_item_load_more, parent, false));
             default: // TYPE_NORMAL
                 return new NormalViewHolder(inflater.inflate(R.layout.fragment_item_main, parent, false));
         }
@@ -75,12 +75,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public class LoadMoreViewHolder extends ViewHolder {
 
 
-//        @Bind(R.id.item_load_more_icon_loading)
-//        protected View iconLoading;
-
         @Bind(R.id.item_load_more_icon_finish)
-        protected TextView iconFinish;
-
+        protected TextView tv;
         public LoadMoreViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -89,6 +85,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         @Override
         protected void update(int position) {
             super.update(position);
+            tv.setText(tv.getResources().getString(R.string.load_more));
         }
     }
 
