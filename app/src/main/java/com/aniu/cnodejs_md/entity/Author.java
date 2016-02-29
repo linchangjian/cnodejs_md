@@ -20,8 +20,7 @@ public class Author {
     }
 
     public String getAvatarUrl() {
-        //return FormatUtils.getCompatAvatarUrl(avatarUrl);
-        return "url";
+        return avatarUrl;
     }
 
     public void setAvatarUrl(String avatarUrl) {
