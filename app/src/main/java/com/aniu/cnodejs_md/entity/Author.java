@@ -1,8 +1,8 @@
 package com.aniu.cnodejs_md.entity;
 
+import com.aniu.cnodejs_md.utils.FormatUtils;
 import com.google.gson.annotations.SerializedName;
 
-import org.joda.time.format.FormatUtils;
 
 public class Author {
     @SerializedName("loginname")
@@ -20,7 +20,7 @@ public class Author {
     }
 
     public String getAvatarUrl() {
-        return avatarUrl;
+        return FormatUtils.getCompatAvatarUrl(avatarUrl);
     }
 
     public void setAvatarUrl(String avatarUrl) {

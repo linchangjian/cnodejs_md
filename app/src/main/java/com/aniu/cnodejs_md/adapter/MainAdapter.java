@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aniu.cnodejs_md.R;
+import com.aniu.cnodejs_md.activity.UserDetailActivity;
 import com.aniu.cnodejs_md.entity.Topic;
 import com.aniu.cnodejs_md.fragment.LatestFragment;
 import com.aniu.cnodejs_md.utils.FormatUtils;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
@@ -96,6 +98,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public class NormalViewHolder extends ViewHolder {
         @Bind(R.id.main_item_img_avatar)
         protected ImageView imgAvatar;
+
         @Bind(R.id.main_item_tv_title)
         protected TextView tvTitle;
 
@@ -142,7 +145,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                 iconGood.setVisibility(topic.isGood() ? View.VISIBLE : View.GONE);
                 Picasso.with(activity).load(topic.getAuthor().getAvatarUrl()).placeholder(R.drawable.ic_discuss).into(imgAvatar);
             }
-            // Picasso.with(activity).load(topic.getAuthor().getAvatarUrl()).placeholder(R.drawable.ic_discuss).into(imgAvatar);
+        }
+
+        @OnClick(R.id.main_item_img_avatar)
+        protected void onImgAvatarClick(){
+            UserDetailActivity.openWithTransitionAnimation(activity,topic.getAuthor().getLoginName(),imgAvatar,topic.getAuthor().getAvatarUrl());
         }
     }
 }
