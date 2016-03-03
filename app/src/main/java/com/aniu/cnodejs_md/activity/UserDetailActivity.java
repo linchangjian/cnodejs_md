@@ -1,6 +1,7 @@
 package com.aniu.cnodejs_md.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -25,6 +26,7 @@ import com.aniu.cnodejs_md.entity.User;
 import com.aniu.cnodejs_md.fragment.UserDetailItemFragment;
 import com.aniu.cnodejs_md.utils.HandlerUtils;
 import com.aniu.cnodejs_md.utils.ShipUtils;
+import com.aniu.cnodejs_md.utils.ToastUtils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 
@@ -143,13 +145,28 @@ public class UserDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void failure(RetrofitError error) {
-
+            public void failure(final RetrofitError error) {
+                HandlerUtils.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!isFinishing()){
+                            if(error.getResponse() != null && error.getResponse().getStatus() == 400){
+                                ToastUtils.with(UserDetailActivity.this).show(R.string.user_not_found);
+                            }else{
+                                ToastUtils.with(UserDetailActivity.this).show(R.string.data_load_faild_and_click_avatar_to_reload);
+                            }
+                        }
+                        progressWheel.setProgress(0);
+                        loading = false;
+                    }
+                },getPostTime());
             }
         });
     }
 
+    public static void open(Context context, String substring) {
 
+    }
 
 
     private class ViewPagerAdapter extends FragmentPagerAdapter{
@@ -205,6 +222,13 @@ public class UserDetailActivity extends AppCompatActivity {
     protected void onBtnGithubUsernameClick() {
         if (!TextUtils.isEmpty(githubUsername)) {
             ShipUtils.openInBrowser(this, "https://github.com/" + githubUsername);
+        }
+    }
+
+    @OnClick(R.id.user_detail_img_avatar)
+    protected void onBtnAvatarClick() {
+        if (!loading) {
+            getUserAsyncTask();
         }
     }
 }

@@ -3,6 +3,7 @@ package com.aniu.cnodejs_md.api;
 import com.aniu.cnodejs_md.entity.Result;
 import com.aniu.cnodejs_md.entity.TabType;
 import com.aniu.cnodejs_md.entity.Topic;
+import com.aniu.cnodejs_md.entity.TopicWithReply;
 import com.aniu.cnodejs_md.entity.User;
 
 import java.util.List;
@@ -27,6 +28,13 @@ public interface ApiService {
     void getUser(
             @Path("loginName") String loginName,
             Callback<Result<User>> callback
+    );
+
+    @GET("/v1/topic/{id}")
+    void getTopic(
+            @Path("id") String id,
+            @Query("mdrender") Boolean mdrender,
+            Callback<Result<TopicWithReply>> callback
     );
 
 }

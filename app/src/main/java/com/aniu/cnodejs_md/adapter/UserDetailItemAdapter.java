@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aniu.cnodejs_md.R;
+import com.aniu.cnodejs_md.activity.TopicActivity;
 import com.aniu.cnodejs_md.activity.UserDetailActivity;
 import com.aniu.cnodejs_md.entity.TopicSimple;
 import com.aniu.cnodejs_md.utils.FormatUtils;
@@ -85,7 +86,7 @@ public class UserDetailItemAdapter extends RecyclerView.Adapter<UserDetailItemAd
 
         @OnClick(R.id.user_detail_item_btn_item)
         protected void onBtnItemClick() {
-            //TopicActivity.open(activity, topic.getId());
+            TopicActivity.open(activity, topic.getId());
         }
     }
 }

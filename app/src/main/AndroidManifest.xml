@@ -24,6 +24,11 @@
             android:label="@string/user_detail"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".activity.TopicActivity"
+            android:label="@string/topic"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
     </application>
 
 </manifest>
