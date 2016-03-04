@@ -113,4 +113,9 @@ public class TopicActivity extends AppCompatActivity implements SwipeRefreshLayo
         RefreshLayoutUtils.refreshOnCreate(refreshLayout, this);
 
     }
+
+    @Override
+    public void onAt(String loginName) {
+
+    }
 }

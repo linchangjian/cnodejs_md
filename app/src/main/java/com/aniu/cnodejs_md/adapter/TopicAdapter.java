@@ -1,8 +1,13 @@
 package com.aniu.cnodejs_md.adapter;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +15,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aniu.cnodejs_md.R;
+import com.aniu.cnodejs_md.activity.MainActivity;
+import com.aniu.cnodejs_md.activity.UserDetailActivity;
+import com.aniu.cnodejs_md.api.ApiClient;
 import com.aniu.cnodejs_md.entity.Reply;
+import com.aniu.cnodejs_md.entity.Topic;
+import com.aniu.cnodejs_md.entity.TopicUpInfo;
 import com.aniu.cnodejs_md.entity.TopicWithReply;
 import com.aniu.cnodejs_md.storage.LoginShared;
 import com.aniu.cnodejs_md.utils.FormatUtils;
 import com.aniu.cnodejs_md.utils.ThemeUtils;
+import com.aniu.cnodejs_md.utils.ToastUtils;
 import com.aniu.cnodejs_md.widget.CNodeWebView;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
 /**
@@ -84,6 +99,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.ViewHolder>{
     }
 
     public interface OnAtOnClickListener {
+        void onAt(String loginName);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -149,6 +165,10 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.ViewHolder>{
             layoutNoReply.setVisibility(topic.getReplyList().size() > 0 ? View.GONE : View.VISIBLE);
 
         }
+        @OnClick(R.id.topic_item_header_img_avatar)
+        protected void onBtnAvatarClick() {
+            UserDetailActivity.openWithTransitionAnimation(activity, topic.getAuthor().getLoginName(), imgAvatar, topic.getAuthor().getAvatarUrl());
+        }
 
     }
 
@@ -204,5 +224,86 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.ViewHolder>{
             // TODO 这里直接使用WebView，有性能问题
             webContent.loadRenderedContent(reply.getHandleContent());
         }
+
+        @OnClick(R.id.topic_item_reply_btn_at)
+        protected void onBtnAtClick() {
+            if (TextUtils.isEmpty(LoginShared.getAccessToken(activity))) {
+                showNeedLoginDialog();
+            } else {
+                onAtClickListener.onAt(reply.getAuthor().getLoginName());
+            }
+        }
+        @OnClick(R.id.topic_item_reply_btn_ups)
+        protected void onBtnUpsClick() {
+            if (TextUtils.isEmpty(LoginShared.getAccessToken(activity))) {
+                showNeedLoginDialog();
+            } else if (reply.getAuthor().getLoginName().equals(LoginShared.getLoginName(activity))) {
+                ToastUtils.with(activity).show("不能帮自己点赞");
+            } else {
+                upTopicAsyncTask(this);
+            }
+        }
+
+    }
+
+    private void upTopicAsyncTask(final ReplyViewHolder holder) {
+        final int position = holder.position;
+        final Reply reply = holder.reply;
+        ApiClient.service.upTopic(LoginShared.getAccessToken(activity), holder.reply.getId(), new Callback<TopicUpInfo>() {
+            @Override
+            public void success(TopicUpInfo info, Response response) {
+                upTopicGetSuccess(info, reply, position, holder);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                upTopicGetFailure(error);
+            }
+        });
+    }
+
+    private void upTopicGetFailure(RetrofitError error) {
+        if (error.getResponse() != null && error.getResponse().getStatus() == 403) {
+            showAccessTokenErrorDialog();
+        } else {
+            ToastUtils.with(activity).show(R.string.network_faild);
+        }
+    }
+
+    private void showAccessTokenErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("提示");
+        builder.setMessage(R.string.access_token_error_tip);
+        builder.setPositiveButton(R.string.confirm,null);
+        builder.show();
+    }
+
+    private void upTopicGetSuccess(TopicUpInfo info, Reply reply, int position, ReplyViewHolder holder) {
+        if(info.getAction() == TopicUpInfo.Action.up){
+            reply.getUpList().add(LoginShared.getId(activity));
+        }else if(info.getAction() == TopicUpInfo.Action.down){
+            reply.getUpList().remove(LoginShared.getId(activity));
+        }
+
+        if(position == holder.position){
+            holder.btnUps.setText(String.valueOf(holder.reply.getUpList().size()));
+            holder.btnUps.setCompoundDrawablesWithIntrinsicBounds(holder.reply.getUpList().contains(LoginShared.getId(activity))? R.drawable.ic_thumb_up_theme_24dp : R.drawable.ic_thumb_up_grey600_24dp,0,0,0);
+        }
+    }
+
+    private void showNeedLoginDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("提示");
+        builder.setMessage(R.string.need_login_tip);
+        builder.setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                activity.startActivity(new Intent(activity, MainActivity.class));
+
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, null);
+        builder.show();
+
     }
 }

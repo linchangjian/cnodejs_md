@@ -27,4 +27,11 @@
         <item name="android:layout_marginBottom">@dimen/shadow_gap_margin_fill</item>
         <item name="android:background">@drawable/gap_shadow</item>
     </style>
+
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#5fa3d0</item>
+        <item name="android:textColorPrimary">#000000</item>
+        <item name="android:background">#FFFFFF</item>
+    </style>
 </resources>

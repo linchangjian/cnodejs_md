@@ -3,13 +3,17 @@ package com.aniu.cnodejs_md.api;
 import com.aniu.cnodejs_md.entity.Result;
 import com.aniu.cnodejs_md.entity.TabType;
 import com.aniu.cnodejs_md.entity.Topic;
+import com.aniu.cnodejs_md.entity.TopicUpInfo;
 import com.aniu.cnodejs_md.entity.TopicWithReply;
 import com.aniu.cnodejs_md.entity.User;
 
 import java.util.List;
 
 import retrofit.Callback;
+import retrofit.http.Field;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -35,6 +39,14 @@ public interface ApiService {
             @Path("id") String id,
             @Query("mdrender") Boolean mdrender,
             Callback<Result<TopicWithReply>> callback
+    );
+
+    @FormUrlEncoded
+    @POST("/v1/reply/{replyId}/ups")
+    void upTopic(
+      @Field("accesstoken") String accessToken,
+      @Path("replyId") String replyId,
+      Callback<TopicUpInfo> callback
     );
 
 }
